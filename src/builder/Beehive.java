@@ -2,6 +2,8 @@ package builder;
 
 import java.util.Hashtable;
 
+import Bee.Bee;
+import decorator.Room;
 import util.Species;
 
 /**
@@ -44,6 +46,10 @@ public class Beehive {
     private Hashtable<Integer, Room> restRooms = new Hashtable<Integer, Room>();
     private Hashtable<Integer, Room> foodRooms = new Hashtable<Integer, Room>();
     
+    private Hashtable<Integer, Bee> workerBeeList = new Hashtable<Integer, Bee>();
+    private Hashtable<Integer, Bee> warriorBeeList = new Hashtable<Integer, Bee>();
+
+    
     /**
      * First constructor, set the species and sets up the hive based on that species.
      * @param builder - The builder object that built the hive
@@ -80,13 +86,38 @@ public class Beehive {
             this.initSpawnRooms = builder.initSpawnRooms;
         }
         
+        for (int i = 0; i < this.initSpawnRooms; i++) {
+            Room spawnRoom = new Room();
+            spawnRooms.put(i, spawnRoom);
+        }
+        
         if (builder.initRestRooms != -1) {
             this.initRestRooms = builder.initRestRooms;
+        }
+        
+        for (int i = 0; i < this.initRestRooms; i++) {
+            Room restRoom = new Room();
+            spawnRooms.put(i, restRoom);
         }
         
         if (builder.initFoodRooms != -1) {
             this.initFoodRooms = builder.initFoodRooms;
         }
+        
+        for (int i = 0; i < this.initFoodRooms; i++) {
+            Room foodRoom = new Room();
+            spawnRooms.put(i, foodRoom);
+        }
+        
+        
+    }
+    
+    public void addWorker(Bee bee){
+        this.workerBeeList.put(workerBeeList.size()+1, bee);
+    }
+    
+    public void addWarrior(Bee bee){
+        this.warriorBeeList.put(warriorBeeList.size()+1, bee);
     }
     
     /**
