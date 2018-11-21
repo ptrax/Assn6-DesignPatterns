@@ -1,0 +1,54 @@
+// Add the Spotbugs plugin
+plugins {
+	id 'com.github.spotbugs' version '1.6.5'
+}
+
+apply plugin: 'application'
+apply plugin: 'java'
+
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.test.java.srcDirs = ['src/test']
+mainClassName = 'util.Main'
+
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testCompile 'junit:junit:4.12'
+  compile 'junit:junit:4.12'
+}
+
+apply plugin: 'checkstyle'
+
+// Set up checkstyle
+checkstyle {
+  ignoreFailures = true
+  showViolations = false
+}
+
+tasks.withType(Checkstyle) {
+  reports {
+    html.enabled = true
+    xml.enabled = false
+  }
+}
+checkstyle {
+    toolVersion = "8.8"
+}
+
+// Set up spotbugs
+spotbugs {
+   toolVersion = '3.1.1'
+   ignoreFailures = true
+}
+
+// Generate HTML for spotbugs
+ tasks.withType(com.github.spotbugs.SpotBugsTask) {
+   reports {
+     xml.enabled = false
+     html.enabled = true
+   }
+ }
+

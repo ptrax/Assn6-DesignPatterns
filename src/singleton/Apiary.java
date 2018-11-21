@@ -2,8 +2,8 @@ package singleton;
 
 import builder.Beehive;
 import builder.Beehive.BeehiveBuilder;
-
 import java.util.Hashtable;
+import mediator.Mediator;
 
 /**
  * Apiary class with a singleton design pattern. This class allows
@@ -15,16 +15,19 @@ import java.util.Hashtable;
 public class Apiary {
     // Set up singleton instance
     private static Apiary apiary = null;
+    public int hiveCount = 0;
     
     // This hashtable will hold all the hives
     Hashtable<Integer, Beehive> hiveTable = new Hashtable<Integer, Beehive>();
+    
+    Mediator mediator;
     
     /**
      * Private constructor for use if an instance has not already been
      * created.
      */
     private Apiary() {
-        //TODO: Set up apiary
+        System.out.println("Apiary Created");
     }
     
     /**
@@ -37,6 +40,8 @@ public class Apiary {
         if (apiary == null) {
             // Create one if it doesn't 
             apiary = new Apiary();
+        } else {
+            System.out.println("Apiary already exists: Returning instance of Apiary");
         }
         
         return apiary;
@@ -51,7 +56,7 @@ public class Apiary {
      * @param queenMultiplier - The strength of the queen/hive
      */
     public BeehiveBuilder spawnHive(String species, double queenMultiplier) {
-        return new BeehiveBuilder(species, queenMultiplier);
+        return new BeehiveBuilder(species, queenMultiplier, this.mediator);
     }
     
     /**

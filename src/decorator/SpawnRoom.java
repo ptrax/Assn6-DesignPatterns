@@ -1,15 +1,15 @@
 package decorator;
 
 import java.util.LinkedList;
+import mediator.Mediator;
+import util.Bee;
 
-import Bee.Bee;
-
-public class SpawnRoom extends RoomDecorator{
+public class SpawnRoom extends RoomDecorator {
     float spawnRate = 1;
     LinkedList<Bee> spawnList = new LinkedList<Bee>();
     
-    public SpawnRoom(Room room) {
-        super(room);
+    public SpawnRoom(Room room, Mediator m) {
+        super(room, m);
     }
     
     @Override 
@@ -29,9 +29,10 @@ public class SpawnRoom extends RoomDecorator{
         spawnList.add(bee);
     }
     
-    public void instaSpawn(Bee bee){
-        if(bee.getType() == "warrior"){
-            this.hive.addWarrior(bee);
+    public void instaSpawn(Bee bee) {
+        Bee tempBee = new Bee();
+        if (bee.getType() == "warrior") {
+            this.hive.addWarrior(tempBee);
         } else {
             this.hive.addWorker(bee);
         }

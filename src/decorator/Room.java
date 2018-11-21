@@ -1,71 +1,33 @@
 package decorator;
 
 import builder.Beehive;
+import mediator.Mediator;
 
-public class Room {
-    int maxCapacity = 0;
-    float health = 100;
-    int currentFill = 0;
-    Beehive hive = null;
-    
+public interface Room extends Mediator {
+
     /**
      * Sets up the room with an initial max capacity.
      * @param capacity - The max capacity for the room
      */
-    public void initRoom(Beehive hive, int capacity) {  
-        this.hive = hive;
-        this.maxCapacity = capacity;
-    }
+    public void initRoom(Beehive hive, int capacity);
     
     /**
      * Inflicts a certain amount of damage on the room. If the health drops 
      * to 0 the room is flagged as destroyed. 
      * @param amount - Amount of damage to inflict on the room
      */
-    public void damage(float amount) {
-        health -= amount;
-    }
+    public void damage(float amount);
 
-    public void heal(float amount) {
-        if (health < 100) {
-            if((health + amount) > 100){
-                health = 100;
-            } else {
-                health += amount;
-            }
-        }
-    }
+    public void heal(float amount);
 
-    public float getHealth() {
-        return health;
-    }
+    public float getHealth();
 
-    public String getType() {
-        return "spawn";
-    }
+    public String getType();
 
-    public int getMaxCapacity() {
-        return 0;
-    }
+    public int getMaxCapacity();
 
-    public int getCurrentFill() {
-        return currentFill;
-    }
+    public int getCurrentFill();
 
-    public int fillRoom(int num) {
-        int overflow = 0;
-        
-        if(currentFill < maxCapacity){
-            if ((currentFill + num) > maxCapacity) {
-                overflow = (currentFill + num) - maxCapacity;
-                currentFill = maxCapacity;
-                
-            } else {
-                currentFill += num;
-            }
-        }
-        
-        return overflow;
-    }
+    public int fillRoom(int num);
 
 }

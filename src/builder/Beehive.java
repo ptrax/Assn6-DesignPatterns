@@ -1,9 +1,16 @@
 package builder;
 
+import decorator.BaseRoom;
+import decorator.FoodRoom;
+import decorator.RestRoom;
+import decorator.Room;
+import decorator.SpawnRoom;
+
 import java.util.Hashtable;
 
-import Bee.Bee;
-import decorator.Room;
+import mediator.Colleague;
+import mediator.Mediator;
+import util.Bee;
 import util.Species;
 
 /**
@@ -48,6 +55,8 @@ public class Beehive {
     
     private Hashtable<Integer, Bee> workerBeeList = new Hashtable<Integer, Bee>();
     private Hashtable<Integer, Bee> warriorBeeList = new Hashtable<Integer, Bee>();
+    
+    private Mediator mediator;
 
     
     /**
@@ -58,6 +67,7 @@ public class Beehive {
         // Set up the required species and queen multiplier
         this.currentSpecies = builder.currentSpecies;
         this.queenMultiplier = builder.queenMultiplier;
+        this.mediator = builder.mediator;
         
         // Set up the worker bee number based on builder or species default
         if (builder.workerBees != -1) {
@@ -87,7 +97,7 @@ public class Beehive {
         }
         
         for (int i = 0; i < this.initSpawnRooms; i++) {
-            Room spawnRoom = new Room();
+            SpawnRoom spawnRoom = new SpawnRoom(new BaseRoom(), this.mediator);
             spawnRooms.put(i, spawnRoom);
         }
         
@@ -96,8 +106,8 @@ public class Beehive {
         }
         
         for (int i = 0; i < this.initRestRooms; i++) {
-            Room restRoom = new Room();
-            spawnRooms.put(i, restRoom);
+            RestRoom restRoom = new RestRoom(new BaseRoom(), this.mediator);
+            restRooms.put(i, restRoom);
         }
         
         if (builder.initFoodRooms != -1) {
@@ -105,19 +115,18 @@ public class Beehive {
         }
         
         for (int i = 0; i < this.initFoodRooms; i++) {
-            Room foodRoom = new Room();
-            spawnRooms.put(i, foodRoom);
+            FoodRoom foodRoom = new FoodRoom(new BaseRoom(), this.mediator);
+            foodRooms.put(i, foodRoom);
         }
         
-        
     }
     
-    public void addWorker(Bee bee){
-        this.workerBeeList.put(workerBeeList.size()+1, bee);
+    public void addWorker(Bee bee) {
+        this.workerBeeList.put(workerBeeList.size() + 1, bee);
     }
     
-    public void addWarrior(Bee bee){
-        this.warriorBeeList.put(warriorBeeList.size()+1, bee);
+    public void addWarrior(Bee bee) {
+        this.warriorBeeList.put(warriorBeeList.size() + 1, bee);
     }
     
     /**
@@ -126,7 +135,7 @@ public class Beehive {
      * @author Paul Traxler
      *
      */
-    public static class BeehiveBuilder {
+    public static class BeehiveBuilder extends Colleague {
         // REQUIRED by builder
         private String currentSpecies; // Any species can be here, but only 1 at a time
         private double queenMultiplier;   // The Queen strength effects the workers and warriors
@@ -140,6 +149,8 @@ public class Beehive {
         private int initRestRooms = -1;     // Number of rest rooms to start with
         private int initFoodRooms = -1;     // Number of food rooms to start with
         
+        private Mediator mediator;
+        
         /**
          * Required constructor to create a new Beehive with a species and a queen strength. 
          * If no other attributes are given, these two things will combine to determine all 
@@ -147,9 +158,11 @@ public class Beehive {
          * @param species - The species to start in the hive
          * @param queenMult - The strength of the queen (and thereby the hive)
          */
-        public BeehiveBuilder(String species, double queenMult) {
+        public BeehiveBuilder(String species, double queenMult, Mediator m) {
+            super(m);
             this.currentSpecies = species;
             this.queenMultiplier = queenMult;
+            this.mediator = m;
         }
         
         /**
@@ -230,6 +243,12 @@ public class Beehive {
          */
         public Beehive build() {
             return new Beehive(this);
+        }
+
+        @Override
+        public void receive(String message) {
+            // TODO Auto-generated method stub
+            
         }
         
     }

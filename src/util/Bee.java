@@ -1,7 +1,7 @@
-package Bee;
+package util;
 
 public class Bee {
-    public String getType(){
+    public String getType() {
         return null;
     }
 }

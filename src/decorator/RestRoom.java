@@ -1,15 +1,16 @@
 package decorator;
 
-public class RestRoom extends RoomDecorator {
+import mediator.Mediator;
 
-    public RestRoom(Room room) {
-        super(room);
-        // TODO Auto-generated constructor stub
-    }
+public class RestRoom extends RoomDecorator {
     
+    public RestRoom(Room room, Mediator m) {
+        super(room, m);
+    }
+
     @Override
     public String getType() {
         return "Rest room";
     }
-    
+   
 }

@@ -1,17 +1,19 @@
 package decorator;
 
-public class FoodRoom extends RoomDecorator{
+import mediator.Mediator;
 
-    public FoodRoom(Room room) {
-        super(room);
+public class FoodRoom extends RoomDecorator {
+
+    public FoodRoom(Room room, Mediator m) {
+        super(room, m);
     }
     
     @Override 
-    public String getType(){
+    public String getType() {
         return "Food Room";
     }
 
-    public void consumeFood(int amount){
-        currentFill -= amount;
+    public void consumeFood(int amount) {
+        this.currentFill -= amount;
     }
 }
