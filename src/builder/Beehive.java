@@ -63,7 +63,7 @@ public class Beehive {
      * First constructor, set the species and sets up the hive based on that species.
      * @param builder - The builder object that built the hive
      */
-    public Beehive(BeehiveBuilder builder) {
+    private Beehive(BeehiveBuilder builder) {
         // Set up the required species and queen multiplier
         this.currentSpecies = builder.currentSpecies;
         this.queenMultiplier = builder.queenMultiplier;
