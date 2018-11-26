@@ -3,32 +3,48 @@ package decorator;
 import builder.Beehive;
 import mediator.Colleague;
 
+/**
+ * Basic room class holding the concrete implementation of the Room interface.
+ * This provides methods for initializing a room, inflict damage, add health,
+ * fill the room, and getters and setters. This is the class that gets 
+ * decorated by the Food, Spawn, and Rest rooms. 
+ * @author Paul Traxler
+ *
+ */
 public class BaseRoom implements Room {
 
     int maxCapacity = 0;
-    float health = 100;
+    double health = 100;
     int currentFill = 0;
     Beehive hive = null;
     
     /**
-     * Sets up the room with an initial max capacity.
-     * @param capacity - The max capacity for the room
+     *  Basic constructor for setting the hive and demonstration.
      */
-    public void initRoom(Beehive hive, int capacity) {  
+    public BaseRoom(Beehive hive) {
         this.hive = hive;
-        this.maxCapacity = capacity;
+        System.out.println("New Basic Room created");
     }
     
     /**
      * Inflicts a certain amount of damage on the room. If the health drops 
-     * to 0 the room is flagged as destroyed. 
+     * below 0 it is capped and brought back up to 0.
      * @param amount - Amount of damage to inflict on the room
      */
-    public void damage(float amount) {
-        health -= amount;
+    public void damage(double amount) {
+        health -= amount / this.hive.getDefenseMultiplier();
+        if (health < 0) {
+            health = 0;
+        }
     }
 
-    public void heal(float amount) {
+    /**
+     * Heals the room a given amount. If the amount puts the room over 100 
+     * health it is capped at 100.
+     * 
+     * @param amount - Amount of health to be applied.
+     */
+    public void heal(double amount) {
         if (health < 100) {
             if ((health + amount) > 100) {
                 health = 100;
@@ -38,22 +54,41 @@ public class BaseRoom implements Room {
         }
     }
 
-    public float getHealth() {
+    /**
+     * Returns the amount of health the room has.
+     */
+    public double getHealth() {
         return health;
     }
 
+    /**
+     * Returns the type of room.
+     */
     public String getType() {
         return "Base room";
     }
 
+    /**
+     * Returns the maximum capcity of the room.
+     */
     public int getMaxCapacity() {
         return 0;
     }
 
+    /**
+     * Returns how full the room currently is.
+     */
     public int getCurrentFill() {
         return currentFill;
     }
 
+    /**
+     * Fills the room a specified amount. If the room reaches max capacity it will
+     * not allow an over fill, but instead return the number of overflow that occured
+     * on fill attempt. 
+     * 
+     * @return Overflow, number of items that couldn't be added. 
+     */
     public int fillRoom(int num) {
         int overflow = 0;
         
@@ -70,10 +105,19 @@ public class BaseRoom implements Room {
         return overflow;
     }
 
+    /**
+     * Receives a message. 
+     * @param message - message to receive. 
+     */
     public void receive(String message) {
         
     }
 
+    /**
+     * Sends a message to the mediator.
+     * @param message - message to send.
+     * @param coll - Colleague sending the message.
+     */
     public void send(String message, Colleague coll) {
         // TODO Auto-generated method stub
         

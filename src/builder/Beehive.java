@@ -15,8 +15,8 @@ import util.Species;
 
 /**
  * A Beehive object is created with a Builder design pattern, with required species and queen
- * multiplier values. The user can also determine the number of worker and warrior bees,
- * the number of different types of rooms, and the hive defense multiplier. 
+ * multiplier values. The user can also determine
+ * the number of different types of rooms and the hive defense multiplier. 
  * 
  * <p>The Queen Defense Multiplier determines the strength of the bee colony. All traits are 
  * affected by this multiplier. The hive itself takes the queen multiplier into consideration
@@ -34,18 +34,17 @@ import util.Species;
  * @author ptraxler
  *
  */
-public class Beehive {
+public class Beehive extends Colleague {
     // REQUIRED by builder
     private String currentSpecies; // Any species can be here, but only 1 at a time
     private double queenMultiplier;   // The Queen strength effects the workers and warriors
     
     // OPTIONAL by builder.. if not implemented a default will be chosen based on species.
-    private int workerBees;        // All species have workers...
-    private int warriorBees;       // ... and warriors. 
     private double hiveDefenseMultiplier; // This dictates how easy it is for other bees to damage
     private int initSpawnRooms = 1;    // Number of spawn rooms to start with 
     private int initRestRooms = 1;     // Number of rest rooms to start with
     private int initFoodRooms = 1;     // Number of food rooms to start with
+    private int hiveId = 0;            // Hive ID number
     
     // Here we set up 3 different kinds of rooms. Spawn rooms are for berthing new bees,
     // Rest Rooms are for resting, food rooms are for storing food. 
@@ -64,28 +63,20 @@ public class Beehive {
      * @param builder - The builder object that built the hive
      */
     private Beehive(BeehiveBuilder builder) {
+        super(builder.mediator);
         // Set up the required species and queen multiplier
         this.currentSpecies = builder.currentSpecies;
         this.queenMultiplier = builder.queenMultiplier;
         this.mediator = builder.mediator;
+        this.hiveId = builder.hiveId;
         
-        // Set up the worker bee number based on builder or species default
-        if (builder.workerBees != -1) {
-            this.workerBees = builder.workerBees;
-        } else {
-            this.workerBees = Species.valueOf(currentSpecies).getDefaultWorkers();
-        }
-        
-        // Set up the warrior bee number based on builder or species default
-        if (builder.warriorBees != -1) {
-            this.warriorBees = builder.warriorBees;
-        } else {
-            this.warriorBees = Species.valueOf(currentSpecies).getDefaultWarriors();
-        }
+        // Output for demonstration
+        System.out.println("Beehive built. ");
         
         // Set up the hive defense multiplier based on builder or species default
         if (builder.hiveDefenseMultiplier != -1) {
             this.hiveDefenseMultiplier = builder.hiveDefenseMultiplier;
+            System.out.println("Hive defense multiplier set to " + builder.hiveDefenseMultiplier);
         } else {
             this.hiveDefenseMultiplier = Species.valueOf(currentSpecies).getDefaultHiveDefense();
         }
@@ -94,28 +85,34 @@ public class Beehive {
         // by species type
         if (builder.initSpawnRooms != -1) {
             this.initSpawnRooms = builder.initSpawnRooms;
+            System.out.println("Initial Spawn Rooms set to " + builder.initSpawnRooms);
+
         }
         
         for (int i = 0; i < this.initSpawnRooms; i++) {
-            SpawnRoom spawnRoom = new SpawnRoom(new BaseRoom(), this.mediator);
+            SpawnRoom spawnRoom = new SpawnRoom(new BaseRoom(this), this.mediator);
             spawnRooms.put(i, spawnRoom);
         }
         
         if (builder.initRestRooms != -1) {
             this.initRestRooms = builder.initRestRooms;
+            System.out.println("Initial Rest Rooms set to " + builder.initRestRooms);
+
         }
         
         for (int i = 0; i < this.initRestRooms; i++) {
-            RestRoom restRoom = new RestRoom(new BaseRoom(), this.mediator);
+            RestRoom restRoom = new RestRoom(new BaseRoom(this), this.mediator);
             restRooms.put(i, restRoom);
         }
         
         if (builder.initFoodRooms != -1) {
             this.initFoodRooms = builder.initFoodRooms;
+            System.out.println("Initial Food Rooms set to " + builder.initFoodRooms);
+
         }
         
         for (int i = 0; i < this.initFoodRooms; i++) {
-            FoodRoom foodRoom = new FoodRoom(new BaseRoom(), this.mediator);
+            FoodRoom foodRoom = new FoodRoom(new BaseRoom(this), this.mediator);
             foodRooms.put(i, foodRoom);
         }
         
@@ -129,6 +126,22 @@ public class Beehive {
         this.warriorBeeList.put(warriorBeeList.size() + 1, bee);
     }
     
+    public double getDefenseMultiplier() {
+        return this.hiveDefenseMultiplier;
+    }
+    
+    public double getQueenMultiplier() {
+        return this.queenMultiplier;
+    }
+    
+    public String getSpecies() {
+        return this.currentSpecies;
+    }
+    
+    public int getId() {
+        return this.hiveId;
+    }
+    
     /**
      * Builder for the Beehive, takes required values of Species and Queen Multiplier, and accepts
      * other input such as worker/warrior bee numbers, hive defense multiplier, and room numbers. 
@@ -137,13 +150,12 @@ public class Beehive {
      */
     public static class BeehiveBuilder extends Colleague {
         // REQUIRED by builder
-        private String currentSpecies; // Any species can be here, but only 1 at a time
+        private String currentSpecies;    // Any species can be here, but only 1 at a time
         private double queenMultiplier;   // The Queen strength effects the workers and warriors
+        private int hiveId;               // ID number of the hive
         
         // OPTIONAL by builder.. if not implemented a default will be chosen based on species.
         // We initialize these all to -1 so we can tell if they've been set or not. 
-        private int workerBees = -1;        // All species have workers...
-        private int warriorBees = -1;       // ... and warriors. 
         private double hiveDefenseMultiplier = -1; // Dictates how easily the hive incurs damage
         private int initSpawnRooms = -1;    // Number of spawn rooms to start with 
         private int initRestRooms = -1;     // Number of rest rooms to start with
@@ -158,35 +170,12 @@ public class Beehive {
          * @param species - The species to start in the hive
          * @param queenMult - The strength of the queen (and thereby the hive)
          */
-        public BeehiveBuilder(String species, double queenMult, Mediator m) {
+        public BeehiveBuilder(int hiveId, String species, double queenMult, Mediator m) {
             super(m);
+            this.hiveId = hiveId;
             this.currentSpecies = species;
             this.queenMultiplier = queenMult;
             this.mediator = m;
-        }
-        
-        /**
-         * Optional set method for the number of worker bees. If this isn't set at creation, 
-         * a number of bees will be selected based on species and queen strength. 
-         * @param n - Number of worker bees to spawn with the hive
-         * @return BeehiveBuilder object
-         */
-        public BeehiveBuilder workerBees(int n) {
-            this.workerBees = n;
-            
-            return this;
-        }
-        
-        /**
-         * Optional set method for the number of worker bees. If this isn't set at creation, 
-         * a number of bees will be selected based on species and queen strength. 
-         * @param n - Number of warrior bees to spawn with the hive
-         * @return BeehiveBuilder object
-         */
-        public BeehiveBuilder warriorBees(int n) {
-            this.warriorBees = n;
-            
-            return this;
         }
 
         /**
@@ -250,6 +239,12 @@ public class Beehive {
             // TODO Auto-generated method stub
             
         }
+        
+    }
+
+    @Override
+    public void receive(String message) {
+        // TODO Auto-generated method stub
         
     }
     

@@ -4,16 +4,19 @@ import builder.Beehive;
 import mediator.Colleague;
 import mediator.Mediator;
 
-public class RoomDecorator implements Room {
+/**
+ * Decorator class for the Rooms, extends Colleague class so we can get communication
+ * with the Mediator. Passes methods through to underlying room.
+ * @author Paul Traxler
+ */
+public class RoomDecorator extends Colleague implements Room {
     protected Room room;
     
-    int maxCapacity = 0;
-    float health = 100;
-    int currentFill = 0;
-    Beehive hive = null;
     Mediator mediator = null;
     
-    public RoomDecorator(Room room, Mediator m) {
+    
+    protected RoomDecorator(Room room, Mediator m) {
+        super(m);
         this.room = room;
         this.mediator = m;
     }
@@ -23,24 +26,19 @@ public class RoomDecorator implements Room {
     }
 
     public void send(String message, Colleague coll) {
-        this.room.send(message, coll);
+        mediator.send(message, coll);
     }
 
-    public void initRoom(Beehive hive, int capacity) {
-        this.room.initRoom(hive, capacity);
-        
-    }
-
-    public void damage(float amount) {
+    public void damage(double amount) {
         this.room.damage(amount);
         
     }
 
-    public void heal(float amount) {
+    public void heal(double amount) {
         this.room.heal(amount);        
     }
 
-    public float getHealth() {
+    public double getHealth() {
         return this.room.getHealth();
     }
 
@@ -55,5 +53,10 @@ public class RoomDecorator implements Room {
     public int fillRoom(int num) {
         return this.room.fillRoom(num);
     }
-    
+
+    @Override
+    public void receive(String message) {
+        // TODO Auto-generated method stub
+        
+    }
 }

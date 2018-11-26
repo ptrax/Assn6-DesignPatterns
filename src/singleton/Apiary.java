@@ -3,6 +3,10 @@ package singleton;
 import builder.Beehive;
 import builder.Beehive.BeehiveBuilder;
 import java.util.Hashtable;
+import java.util.Set;
+
+import mediator.Colleague;
+import mediator.ConcreteMediator;
 import mediator.Mediator;
 
 /**
@@ -12,13 +16,13 @@ import mediator.Mediator;
  * @date 11/15/18
  *
  */
-public class Apiary {
+public class Apiary extends Colleague {
     // Set up singleton instance
     private static Apiary apiary = null;
     public int hiveCount = 0;
     
     // This hashtable will hold all the hives
-    Hashtable<Integer, Beehive> hiveTable = new Hashtable<Integer, Beehive>();
+    private Hashtable<Integer, Beehive> hiveTable = new Hashtable<Integer, Beehive>();
     
     Mediator mediator;
     
@@ -26,7 +30,9 @@ public class Apiary {
      * Private constructor for use if an instance has not already been
      * created.
      */
-    private Apiary() {
+    private Apiary(Mediator m) {
+        super(m);
+        this.mediator = m;
         System.out.println("Apiary Created");
     }
     
@@ -39,7 +45,7 @@ public class Apiary {
         // Check if instance exists
         if (apiary == null) {
             // Create one if it doesn't 
-            apiary = new Apiary();
+            apiary = new Apiary(new ConcreteMediator());
         } else {
             System.out.println("Apiary already exists: Returning instance of Apiary");
         }
@@ -48,23 +54,48 @@ public class Apiary {
     }
     
     /**
-     * Spawns a hive with a specified species and queen multiplier. Returns a
-     * BeehiveBuilder object that you can use to fill out optional fields.
-     * To create a Beehive object, you must call
-     * <code>spawnHive(species, multiplier).build()</code> 
+     * Spawns a hive with a specified species and queen multiplier.
      * @param species - The species to install in the hive
      * @param queenMultiplier - The strength of the queen/hive
      */
-    public BeehiveBuilder spawnHive(String species, double queenMultiplier) {
-        return new BeehiveBuilder(species, queenMultiplier, this.mediator);
+    public Beehive spawnHive(String species, double queenMultiplier) {
+        // Hive ID number
+        int num = hiveTable.size() + 1;
+        
+        // Create new Beehive
+        Beehive spawn = new BeehiveBuilder(num, species, queenMultiplier, this.mediator).build();
+
+        // Put it in the table
+        hiveTable.put(num, spawn);
+       
+        return spawn;
     }
     
     /**
-     * Gets the Hashtable containing the Beehives. The key is based on the hive's
-     * spawn order. 
-     * @return Hashtable of Beehives
+     * Checks to see if an apiary contains a given hive.
+     * @param hive - Hive to check for existance
+     * @return True if hive exists, false otherwise
      */
-    public Hashtable<Integer, Beehive> getHives() {
-        return hiveTable;
+    public boolean containsHive(Beehive hive) {
+        if (hiveTable.contains(hive)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Gets the hive associated with a given ID.
+     * @param hiveId - the ID number of the hive
+     * @return Beehive
+     */
+    public Beehive getHive(int hiveId) {
+        return hiveTable.get(hiveId);
+    }
+    
+    @Override
+    public void receive(String message) {
+        // TODO Auto-generated method stub
+        
     }
 }
